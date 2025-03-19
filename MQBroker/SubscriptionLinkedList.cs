@@ -133,16 +133,16 @@ namespace MQBroker
         // Representación en cadena de todas las suscripciones de la lista.
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder newString = new StringBuilder();
             SubscriptionNode current = head;
 
             while (current != null)
             {
-                sb.AppendLine(current.Data.ToString());
+                newString.AppendLine(current.Data.ToString());
                 current = current.Next;
             }
 
-            return sb.ToString();
+            return newString.ToString();
         }
     }
 }
