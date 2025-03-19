@@ -26,10 +26,10 @@ namespace MQBroker
         // en función de su AppID y Topic, ignorando mayúsculas.
         public override bool Equals(object obj)
         {
-            if (obj is Subscription other)
+            if (obj is Subscription sub2)
             {
-                return this.AppID.Equals(other.AppID, StringComparison.OrdinalIgnoreCase) &&
-                       this.Topic.Equals(other.Topic, StringComparison.OrdinalIgnoreCase);
+                return this.AppID.Equals(sub2.AppID, StringComparison.OrdinalIgnoreCase) &&
+                       this.Topic.Equals(sub2.Topic, StringComparison.OrdinalIgnoreCase);
             }
             return false;
         }
