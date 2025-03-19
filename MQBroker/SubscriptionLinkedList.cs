@@ -33,7 +33,7 @@ namespace MQBroker
         // Constructor que inicializa la lista vacía.
         public SubscriptionLinkedList()
         {
-            head = null;
+            this.head = null;
             Count = 0;
         }
 
@@ -49,14 +49,14 @@ namespace MQBroker
             SubscriptionNode newNode = new SubscriptionNode(subscription);
 
             // Si la lista está vacía, el nuevo nodo pasa a ser la cabeza.
-            if (head == null)
+            if (this.head == null)
             {
-                head = newNode;
+                this.head = newNode;
             }
             else
             {
                 // De lo contrario, recorremos hasta el último nodo y lo enlazamos.
-                SubscriptionNode current = head;
+                SubscriptionNode current = this.head;
                 while (current.Next != null)
                 {
                     current = current.Next;
@@ -71,7 +71,7 @@ namespace MQBroker
         // Método para encontrar un nodo en la lista que coincida con el appID y topic.
         public SubscriptionNode Find(string appID, string topic)
         {
-            SubscriptionNode current = head;
+            SubscriptionNode current = this.head;
 
             // Recorremos la lista y comparamos con los valores recibidos.
             while (current != null)
@@ -100,19 +100,19 @@ namespace MQBroker
         public bool Remove(Subscription subscription)
         {
             // Si la lista está vacía, no hay nada que eliminar.
-            if (head == null)
+            if (this.head == null)
                 return false;
 
             // Si la suscripción a eliminar está en la cabeza, reasignamos la cabeza.
-            if (head.Data.Equals(subscription))
+            if (this.head.Data.Equals(subscription))
             {
-                head = head.Next;
+                this.head = this.head.Next;
                 Count--;
                 return true;
             }
 
             // De lo contrario, recorremos la lista en busca del nodo a eliminar.
-            SubscriptionNode current = head;
+            SubscriptionNode current = this.head;
             while (current.Next != null)
             {
                 // Si el siguiente nodo coincide con la suscripción a eliminar,
@@ -134,7 +134,7 @@ namespace MQBroker
         public override string ToString()
         {
             StringBuilder newString = new StringBuilder();
-            SubscriptionNode current = head;
+            SubscriptionNode current = this.head;
 
             while (current != null)
             {
