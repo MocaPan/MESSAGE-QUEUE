@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-namespace MQBrokerServer
+namespace MQBroker
 {
     class Program
     {
