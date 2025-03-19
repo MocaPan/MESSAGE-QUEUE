@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MQBroker
 {
-    internal class SubscriptionNode
+    public class SubscriptionNode
     {
         public Subscription Data { get; set; }
         public SubscriptionNode Next { get; set; }
