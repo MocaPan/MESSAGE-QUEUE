@@ -9,7 +9,7 @@ namespace MQBroker
     internal class SubscriptionNode
     {
         public Subscription Data { get; set; }
-        public SubscriptionNode? Next { get; set; }
+        public SubscriptionNode Next { get; set; }
 
         public SubscriptionNode(Subscription data)
         {
