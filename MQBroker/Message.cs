@@ -1,25 +1,28 @@
-﻿using System;
+﻿// Este archivo define la clase Message, que representa un mensaje con un identificador de aplicación y contenido de texto.
 
-namespace MQBroker
+using System; // Importa el espacio de nombres System, que contiene clases fundamentales.
+
+namespace MQBroker // Define un espacio de nombres llamado MQBroker.
 {
-
-    public class Message
+    public class Message // Declara una clase pública llamada Message.
     {
-        // Identificador de la aplicación que envía el mensaje (opcional para tracking).
+        // Propiedad para almacenar el identificador de la aplicación que envía el mensaje (opcional para tracking).
         public string AppID { get; set; }
 
-        // Contenido del mensaje (texto, en este ejemplo).
+        // Propiedad para almacenar el contenido del mensaje (texto, en este ejemplo).
         public string Content { get; set; }
 
+        // Constructor que inicializa las propiedades AppID y Content con los valores proporcionados.
         public Message(string appID, string content)
         {
-            AppID = appID;
-            Content = content;
+            AppID = appID; // Asigna el valor del parámetro appID a la propiedad AppID.
+            Content = content; // Asigna el valor del parámetro content a la propiedad Content.
         }
 
-        // Representación en texto para depuración.
+        // Método que devuelve una representación en texto del mensaje para depuración.
         public override string ToString()
         {
+            // Devuelve una cadena que contiene el AppID y el contenido del mensaje.
             return $"[{AppID}] {Content}";
         }
     }
