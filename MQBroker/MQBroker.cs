@@ -6,31 +6,27 @@ using System.Threading;
 
 namespace MQBroker
 {
-    // Clase que implementa el servidor MQBroker.
-    // - Escucha conexiones TCP en el puerto indicado.
-    // - Gestiona suscripciones a través de la lista enlazada.
-    // - Procesa los comandos SUBSCRIBE y UNSUBSCRIBE.
     public class MQBroker
     {
-        // TcpListener para escuchar conexiones en un puerto.
         private TcpListener listener;
 
-        // Lista enlazada que guarda todas las suscripciones.
+        // Lista enlazada de suscripciones (AppID, Topic).
         private SubscriptionLinkedList subscriptions;
 
-        // Bandera para controlar el bucle de escucha.
+        // Lista enlazada de colas de mensajes para cada suscriptor (AppID, Topic).
+        private SubscriptionQueueLinkedList subscriptionQueues;
+
         private bool isRunning;
 
-        // Constructor: Inicializa la lista y el listener en IPAddress.Any, puerto recibido.
         public MQBroker(int port)
         {
+            // Inicializamos ambas listas (suscripciones y colas).
             subscriptions = new SubscriptionLinkedList();
+            subscriptionQueues = new SubscriptionQueueLinkedList();
+
             listener = new TcpListener(IPAddress.Any, port);
         }
 
-        // Inicia el servidor:
-        // 1. listener.Start() para comenzar a escuchar.
-        // 2. Bucle while (isRunning) que acepta clientes.
         public void Start()
         {
             listener.Start();
@@ -41,11 +37,9 @@ namespace MQBroker
             {
                 try
                 {
-                    // Espera a que un cliente se conecte (bloqueante).
                     TcpClient client = listener.AcceptTcpClient();
                     Console.WriteLine("Cliente conectado.");
 
-                    // Crea un hilo para procesar a cada cliente sin bloquear la escucha de nuevos.
                     Thread clientThread = new Thread(() => ProcessClient(client));
                     clientThread.Start();
                 }
@@ -56,37 +50,32 @@ namespace MQBroker
             }
         }
 
-        // Método que procesa la comunicación con un cliente particular.
-        // - Lee el mensaje del cliente.
-        // - Determina si es SUBSCRIBE o UNSUBSCRIBE.
-        // - Llama a los métodos apropiados y envía respuesta.
         private void ProcessClient(TcpClient client)
         {
-            // Usamos "using" para asegurarnos de cerrar la conexión al final.
             using (client)
             {
-                // Obtenemos el stream para leer/escribir datos.
                 NetworkStream stream = client.GetStream();
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[2048];
 
                 try
                 {
-                    // Leemos datos enviados por el cliente.
                     int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                    // Convertimos el buffer en string (UTF8).
                     string request = Encoding.UTF8.GetString(buffer, 0, bytesRead).Trim();
                     Console.WriteLine("Mensaje recibido: " + request);
 
-                    // Dividimos el mensaje en partes (ej: "SUBSCRIBE 1234 deportes").
+                    // Formato esperado:
+                    // SUBSCRIBE <AppID> <Topic>
+                    // UNSUBSCRIBE <AppID> <Topic>
+                    // PUBLISH <AppID> <Topic> <Mensaje...>
+                    // RECEIVE <AppID> <Topic>
                     string[] parts = request.Split(' ');
+
                     if (parts.Length >= 3)
                     {
-                        // El primer elemento es el comando, el segundo es AppID y el tercero es Topic.
                         string command = parts[0].ToUpper();
                         string appID = parts[1];
                         string topic = parts[2];
 
-                        // Evaluamos el comando.
                         if (command == "SUBSCRIBE")
                         {
                             Subscribe(appID, topic);
@@ -97,6 +86,34 @@ namespace MQBroker
                             Unsubscribe(appID, topic);
                             SendResponse(stream, $"Suscripción eliminada: AppID={appID}, Topic={topic}");
                         }
+                        else if (command == "PUBLISH")
+                        {
+                            // Se requiere al menos 4 partes: PUBLISH <AppID> <Topic> <Mensaje...>
+                            if (parts.Length >= 4)
+                            {
+                                // El mensaje puede tener espacios, lo reconstruimos.
+                                string messageContent = string.Join(" ", parts, 3, parts.Length - 3);
+                                Publish(appID, topic, messageContent);
+                                SendResponse(stream, $"Mensaje publicado en Topic={topic}");
+                            }
+                            else
+                            {
+                                SendResponse(stream, "Formato incorrecto para PUBLISH. Se espera: PUBLISH <AppID> <Topic> <Mensaje>");
+                            }
+                        }
+                        else if (command == "RECEIVE")
+                        {
+                            // Retiramos el siguiente mensaje de la cola del suscriptor.
+                            string msgContent = ReceiveMessage(appID, topic);
+                            if (string.IsNullOrEmpty(msgContent))
+                            {
+                                SendResponse(stream, "No hay mensajes disponibles o no está suscrito.");
+                            }
+                            else
+                            {
+                                SendResponse(stream, $"Mensaje recibido: {msgContent}");
+                            }
+                        }
                         else
                         {
                             SendResponse(stream, "Comando desconocido.");
@@ -104,8 +121,7 @@ namespace MQBroker
                     }
                     else
                     {
-                        // Si no hay suficientes partes, enviamos un mensaje de error al cliente.
-                        SendResponse(stream, "Formato incorrecto. Se espera: COMMAND AppID Topic");
+                        SendResponse(stream, "Formato incorrecto. Se espera: COMMAND AppID Topic [Mensaje]");
                     }
                 }
                 catch (Exception ex)
@@ -115,18 +131,17 @@ namespace MQBroker
             }
         }
 
-        // Envía una respuesta al cliente a través del stream.
         private void SendResponse(NetworkStream stream, string message)
         {
             byte[] responseBytes = Encoding.UTF8.GetBytes(message);
             stream.Write(responseBytes, 0, responseBytes.Length);
         }
 
-        // Método para suscribir un AppID a un Topic.
-        // Agrega la suscripción a la lista si no existe ya.
         public void Subscribe(string appID, string topic)
         {
             Subscription newSub = new Subscription(appID, topic);
+
+            // Si ya existe, no la duplicamos (la lista y colas se encargan de no duplicar).
             if (!subscriptions.Contains(newSub))
             {
                 subscriptions.Add(newSub);
@@ -136,13 +151,16 @@ namespace MQBroker
             {
                 Console.WriteLine("La suscripción ya existe: " + newSub.ToString());
             }
+
+            // Creamos también la cola de mensajes para este suscriptor (si no existe).
+            subscriptionQueues.Add(newSub);
         }
 
-        // Método para desuscribir un AppID de un Topic.
-        // Elimina la suscripción de la lista, si existe.
         public void Unsubscribe(string appID, string topic)
         {
             Subscription sub = new Subscription(appID, topic);
+
+            // Eliminamos de la lista de suscripciones.
             if (subscriptions.Remove(sub))
             {
                 Console.WriteLine("Suscripción eliminada: " + sub.ToString());
@@ -151,11 +169,72 @@ namespace MQBroker
             {
                 Console.WriteLine("No se encontró la suscripción para eliminar: " + sub.ToString());
             }
+
+            // Eliminamos la cola de mensajes de este suscriptor.
+            subscriptionQueues.Remove(sub);
         }
 
-        // Detiene el servidor:
-        // - Cambia isRunning a false para romper el bucle.
-        // - Cierra el listener.
+        /// Publica un mensaje en el Topic. 
+        /// Por cada suscriptor que tenga ese Topic, se encola el mensaje.
+        /// Si no hay suscriptores para ese Topic, se ignora la publicación.
+        public void Publish(string appID, string topic, string messageContent)
+        {
+            // 1. Verificamos si existe AL MENOS un suscriptor para ese topic.
+            //    Usamos FindAllByTopic(...) en subscriptionQueues.
+            var queues = subscriptionQueues.FindAllByTopic(topic);
+            if (queues.Length == 0)
+            {
+                // No hay suscriptores para este Topic; ignoramos la publicación.
+                Console.WriteLine($"Publish -> No hay suscriptores para el topic '{topic}'. Se ignora.");
+                return;
+            }
+
+            // 2. Creamos el objeto Message.
+            Message msg = new Message(appID, messageContent);
+
+            // 3. Para cada suscriptor con ese topic, encolamos el mensaje.
+            foreach (var sub in queues)
+            {
+                sub.Messages.Enqueue(msg);
+            }
+
+            Console.WriteLine($"Publish -> Se encoló mensaje '{messageContent}' para {queues.Length} suscriptores del topic '{topic}'.");
+        }
+
+        /// Retira el siguiente mensaje de la cola de (AppID, Topic), si existe.
+        /// Retorna el contenido del mensaje o cadena vacía si no hay mensajes o no está suscrito.
+        public string ReceiveMessage(string appID, string topic)
+        {
+            Subscription sub = new Subscription(appID, topic);
+
+            // 1. Verificamos si (AppID, Topic) está suscrito.
+            if (!subscriptions.Contains(sub))
+            {
+                Console.WriteLine($"Receive -> (AppID={appID}, Topic={topic}) NO está suscrito.");
+                return string.Empty;
+            }
+
+            // 2. Buscamos la cola correspondiente.
+            var queue = subscriptionQueues.Find(sub);
+            if (queue == null)
+            {
+                Console.WriteLine($"Receive -> No existe cola para (AppID={appID}, Topic={topic}).");
+                return string.Empty;
+            }
+
+            // 3. Desencolamos el siguiente mensaje.
+            Message msg = queue.Messages.Dequeue();
+            if (msg == null)
+            {
+                // No hay mensajes.
+                Console.WriteLine($"Receive -> Cola vacía para (AppID={appID}, Topic={topic}).");
+                return string.Empty;
+            }
+
+            Console.WriteLine($"Receive -> (AppID={appID}, Topic={topic}) recibió mensaje: '{msg.Content}'.");
+            return msg.Content;
+        }
+
         public void Stop()
         {
             isRunning = false;
