@@ -1,14 +1,17 @@
-﻿using System;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading;
+﻿// Este archivo define la clase MQBroker, que implementa un servidor de mensajería simple.
+// El servidor permite suscribirse a temas, publicar mensajes en temas y recibir mensajes de temas.
 
-namespace MQBroker
+using System; // Importa el espacio de nombres System, que contiene clases fundamentales.
+using System.Net; // Importa el espacio de nombres System.Net, que contiene clases para trabajar con redes.
+using System.Net.Sockets; // Importa el espacio de nombres System.Net.Sockets, que contiene clases para trabajar con sockets.
+using System.Text; // Importa el espacio de nombres System.Text, que contiene clases para manipulación de texto.
+using System.Threading; // Importa el espacio de nombres System.Threading, que contiene clases para trabajar con hilos.
+
+namespace MQBroker // Define un espacio de nombres llamado MQBroker.
 {
-    public class MQBroker
+    public class MQBroker // Declara una clase pública llamada MQBroker.
     {
-        private TcpListener listener;
+        private TcpListener listener; // Objeto para escuchar conexiones TCP.
 
         // Lista enlazada de suscripciones (AppID, Topic).
         private SubscriptionLinkedList subscriptions;
@@ -16,30 +19,31 @@ namespace MQBroker
         // Lista enlazada de colas de mensajes para cada suscriptor (AppID, Topic).
         private SubscriptionQueueLinkedList subscriptionQueues;
 
-        private bool isRunning;
+        private bool isRunning; // Indica si el servidor está en ejecución.
 
-        public MQBroker(int port)
+        public MQBroker(int port) // Constructor que inicializa el servidor en el puerto especificado.
         {
             // Inicializamos ambas listas (suscripciones y colas).
             subscriptions = new SubscriptionLinkedList();
             subscriptionQueues = new SubscriptionQueueLinkedList();
 
-            listener = new TcpListener(IPAddress.Any, port);
+            listener = new TcpListener(IPAddress.Any, port); // Inicializa el listener en el puerto especificado.
         }
 
-        public void Start()
+        public void Start() // Método para iniciar el servidor.
         {
-            listener.Start();
-            isRunning = true;
+            listener.Start(); // Inicia el listener.
+            isRunning = true; // Marca el servidor como en ejecución.
             Console.WriteLine("MQBroker: Servidor iniciado. Escuchando conexiones...");
 
-            while (isRunning)
+            while (isRunning) // Bucle principal del servidor.
             {
                 try
                 {
-                    TcpClient client = listener.AcceptTcpClient();
+                    TcpClient client = listener.AcceptTcpClient(); // Acepta una conexión de cliente.
                     Console.WriteLine("Cliente conectado.");
 
+                    // Crea un nuevo hilo para procesar la conexión del cliente.
                     Thread clientThread = new Thread(() => ProcessClient(client));
                     clientThread.Start();
                 }
@@ -50,17 +54,17 @@ namespace MQBroker
             }
         }
 
-        private void ProcessClient(TcpClient client)
+        private void ProcessClient(TcpClient client) // Método para procesar la conexión de un cliente.
         {
-            using (client)
+            using (client) // Asegura que el cliente se cierre correctamente.
             {
-                NetworkStream stream = client.GetStream();
-                byte[] buffer = new byte[2048];
+                NetworkStream stream = client.GetStream(); // Obtiene el stream de red del cliente.
+                byte[] buffer = new byte[2048]; // Buffer para leer datos del cliente.
 
                 try
                 {
-                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                    string request = Encoding.UTF8.GetString(buffer, 0, bytesRead).Trim();
+                    int bytesRead = stream.Read(buffer, 0, buffer.Length); // Lee datos del cliente.
+                    string request = Encoding.UTF8.GetString(buffer, 0, bytesRead).Trim(); // Convierte los datos a una cadena.
                     Console.WriteLine("Mensaje recibido: " + request);
 
                     // Formato esperado:
@@ -68,32 +72,32 @@ namespace MQBroker
                     // UNSUBSCRIBE <AppID> <Topic>
                     // PUBLISH <AppID> <Topic> <Mensaje...>
                     // RECEIVE <AppID> <Topic>
-                    string[] parts = request.Split(' ');
+                    string[] parts = request.Split(' '); // Divide la solicitud en partes.
 
-                    if (parts.Length >= 3)
+                    if (parts.Length >= 3) // Verifica que la solicitud tenga al menos 3 partes.
                     {
-                        string command = parts[0].ToUpper();
-                        string appID = parts[1];
-                        string topic = parts[2];
+                        string command = parts[0].ToUpper(); // Comando (SUBSCRIBE, UNSUBSCRIBE, PUBLISH, RECEIVE).
+                        string appID = parts[1]; // ID de la aplicación.
+                        string topic = parts[2]; // Tema de la suscripción.
 
-                        if (command == "SUBSCRIBE")
+                        if (command == "SUBSCRIBE") // Maneja el comando SUBSCRIBE.
                         {
-                            Subscribe(appID, topic);
+                            Subscribe(appID, topic); // Añade una suscripción.
                             SendResponse(stream, $"Suscripción añadida: AppID={appID}, Topic={topic}");
                         }
-                        else if (command == "UNSUBSCRIBE")
+                        else if (command == "UNSUBSCRIBE") // Maneja el comando UNSUBSCRIBE.
                         {
-                            Unsubscribe(appID, topic);
+                            Unsubscribe(appID, topic); // Elimina una suscripción.
                             SendResponse(stream, $"Suscripción eliminada: AppID={appID}, Topic={topic}");
                         }
-                        else if (command == "PUBLISH")
+                        else if (command == "PUBLISH") // Maneja el comando PUBLISH.
                         {
                             // Se requiere al menos 4 partes: PUBLISH <AppID> <Topic> <Mensaje...>
                             if (parts.Length >= 4)
                             {
                                 // El mensaje puede tener espacios, lo reconstruimos.
                                 string messageContent = string.Join(" ", parts, 3, parts.Length - 3);
-                                Publish(appID, topic, messageContent);
+                                Publish(appID, topic, messageContent); // Publica un mensaje.
                                 SendResponse(stream, $"Mensaje publicado en Topic={topic}");
                             }
                             else
@@ -101,10 +105,10 @@ namespace MQBroker
                                 SendResponse(stream, "Formato incorrecto para PUBLISH. Se espera: PUBLISH <AppID> <Topic> <Mensaje>");
                             }
                         }
-                        else if (command == "RECEIVE")
+                        else if (command == "RECEIVE") // Maneja el comando RECEIVE.
                         {
                             // Retiramos el siguiente mensaje de la cola del suscriptor.
-                            string msgContent = ReceiveMessage(appID, topic);
+                            string msgContent = ReceiveMessage(appID, topic); // Recibe un mensaje.
                             if (string.IsNullOrEmpty(msgContent))
                             {
                                 SendResponse(stream, "No hay mensajes disponibles o no está suscrito.");
@@ -116,12 +120,12 @@ namespace MQBroker
                         }
                         else
                         {
-                            SendResponse(stream, "Comando desconocido.");
+                            SendResponse(stream, "Comando desconocido."); // Comando no reconocido.
                         }
                     }
                     else
                     {
-                        SendResponse(stream, "Formato incorrecto. Se espera: COMMAND AppID Topic [Mensaje]");
+                        SendResponse(stream, "Formato incorrecto. Se espera: COMMAND AppID Topic [Mensaje]"); // Formato incorrecto.
                     }
                 }
                 catch (Exception ex)
@@ -131,20 +135,20 @@ namespace MQBroker
             }
         }
 
-        private void SendResponse(NetworkStream stream, string message)
+        private void SendResponse(NetworkStream stream, string message) // Método para enviar una respuesta al cliente.
         {
-            byte[] responseBytes = Encoding.UTF8.GetBytes(message);
-            stream.Write(responseBytes, 0, responseBytes.Length);
+            byte[] responseBytes = Encoding.UTF8.GetBytes(message); // Convierte el mensaje a bytes.
+            stream.Write(responseBytes, 0, responseBytes.Length); // Envía la respuesta al cliente.
         }
 
-        public void Subscribe(string appID, string topic)
+        public void Subscribe(string appID, string topic) // Método para añadir una suscripción.
         {
-            Subscription newSub = new Subscription(appID, topic);
+            Subscription newSub = new Subscription(appID, topic); // Crea una nueva suscripción.
 
             // Si ya existe, no la duplicamos (la lista y colas se encargan de no duplicar).
             if (!subscriptions.Contains(newSub))
             {
-                subscriptions.Add(newSub);
+                subscriptions.Add(newSub); // Añade la suscripción si no existe.
                 Console.WriteLine("Nueva suscripción agregada: " + newSub.ToString());
             }
             else
@@ -156,9 +160,9 @@ namespace MQBroker
             subscriptionQueues.Add(newSub);
         }
 
-        public void Unsubscribe(string appID, string topic)
+        public void Unsubscribe(string appID, string topic) // Método para eliminar una suscripción.
         {
-            Subscription sub = new Subscription(appID, topic);
+            Subscription sub = new Subscription(appID, topic); // Crea una suscripción para eliminar.
 
             // Eliminamos de la lista de suscripciones.
             if (subscriptions.Remove(sub))
@@ -177,7 +181,7 @@ namespace MQBroker
         /// Publica un mensaje en el Topic. 
         /// Por cada suscriptor que tenga ese Topic, se encola el mensaje.
         /// Si no hay suscriptores para ese Topic, se ignora la publicación.
-        public void Publish(string appID, string topic, string messageContent)
+        public void Publish(string appID, string topic, string messageContent) // Método para publicar un mensaje.
         {
             // 1. Verificamos si existe AL MENOS un suscriptor para ese topic.
             //    Usamos FindAllByTopic(...) en subscriptionQueues.
@@ -203,9 +207,9 @@ namespace MQBroker
 
         /// Retira el siguiente mensaje de la cola de (AppID, Topic), si existe.
         /// Retorna el contenido del mensaje o cadena vacía si no hay mensajes o no está suscrito.
-        public string ReceiveMessage(string appID, string topic)
+        public string ReceiveMessage(string appID, string topic) // Método para recibir un mensaje.
         {
-            Subscription sub = new Subscription(appID, topic);
+            Subscription sub = new Subscription(appID, topic); // Crea una suscripción para buscar.
 
             // 1. Verificamos si (AppID, Topic) está suscrito.
             if (!subscriptions.Contains(sub))
@@ -232,13 +236,13 @@ namespace MQBroker
             }
 
             Console.WriteLine($"Receive -> (AppID={appID}, Topic={topic}) recibió mensaje: '{msg.Content}'.");
-            return msg.Content;
+            return msg.Content; // Retorna el contenido del mensaje.
         }
 
-        public void Stop()
+        public void Stop() // Método para detener el servidor.
         {
-            isRunning = false;
-            listener.Stop();
+            isRunning = false; // Marca el servidor como no en ejecución.
+            listener.Stop(); // Detiene el listener.
         }
     }
 }
