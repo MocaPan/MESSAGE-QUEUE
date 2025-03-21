@@ -1,101 +1,102 @@
-﻿using System;
-using System.Text;
+﻿// Este archivo define una lista enlazada para manejar mensajes, con operaciones para encolar, desencolar y visualizar mensajes.
 
-namespace MQBroker
+using System; // Importa el espacio de nombres System, que contiene clases fundamentales.
+using System.Text; // Importa el espacio de nombres System.Text, que contiene clases para manipulación de texto.
+
+namespace MQBroker // Define un espacio de nombres llamado MQBroker.
 {
-   
-    internal class MessageNode
+    internal class MessageNode // Declara una clase interna llamada MessageNode.
     {
-        public Message Data { get; set; }
-        public MessageNode Next { get; set; }
+        public Message Data { get; set; } // Propiedad para almacenar el mensaje.
+        public MessageNode Next { get; set; } // Propiedad para apuntar al siguiente nodo en la lista.
 
-        public MessageNode(Message data)
+        public MessageNode(Message data) // Constructor que inicializa las propiedades Data y Next.
         {
-            Data = data;
-            Next = null;
+            Data = data; // Asigna el valor del parámetro data a la propiedad Data.
+            Next = null; // Inicializa la propiedad Next como null.
         }
     }
 
-    public class MessageLinkedList
+    public class MessageLinkedList // Declara una clase pública llamada MessageLinkedList.
     {
         private MessageNode head; // Apunta al primer nodo (frente de la cola).
         private MessageNode tail; // Apunta al último nodo (final de la cola).
-        public int Count { get; private set; }
+        public int Count { get; private set; } // Propiedad para contar el número de elementos en la lista.
 
-        public MessageLinkedList()
+        public MessageLinkedList() // Constructor que inicializa la lista vacía.
         {
-            head = null;
-            tail = null;
-            Count = 0;
+            head = null; // Inicializa head como null.
+            tail = null; // Inicializa tail como null.
+            Count = 0; // Inicializa Count como 0.
         }
 
         /// Encola (agrega al final) un mensaje.
         public void Enqueue(Message message)
         {
-            MessageNode newNode = new MessageNode(message);
+            MessageNode newNode = new MessageNode(message); // Crea un nuevo nodo con el mensaje.
 
-            if (head == null)
+            if (head == null) // Si la cola está vacía.
             {
                 // La cola está vacía; head y tail apuntan al nuevo nodo.
-                head = newNode;
-                tail = newNode;
+                head = newNode; // Asigna el nuevo nodo a head.
+                tail = newNode; // Asigna el nuevo nodo a tail.
             }
             else
             {
                 // Agregamos al final.
-                tail.Next = newNode;
-                tail = newNode;
+                tail.Next = newNode; // Enlaza el nuevo nodo al final de la cola.
+                tail = newNode; // Actualiza tail para que apunte al nuevo nodo.
             }
-            Count++;
+            Count++; // Incrementa el contador de elementos.
         }
 
         /// Desencola (retira del frente) y retorna el mensaje.
         public Message Dequeue()
         {
-            if (head == null)
+            if (head == null) // Si la cola está vacía.
             {
                 // Cola vacía.
-                return null;
+                return null; // Retorna null.
             }
 
             // Guardamos el nodo frontal.
-            MessageNode temp = head;
+            MessageNode temp = head; // Guarda el nodo frontal.
             // Avanzamos la cabeza.
-            head = head.Next;
+            head = head.Next; // Avanza head al siguiente nodo.
 
             // Si la cabeza es null, significa que la cola quedó vacía; tail = null.
-            if (head == null)
+            if (head == null) // Si la cola quedó vacía.
             {
-                tail = null;
+                tail = null; // Asigna null a tail.
             }
 
-            Count--;
-            return temp.Data;
+            Count--; // Decrementa el contador de elementos.
+            return temp.Data; // Retorna el mensaje del nodo frontal.
         }
 
         /// Permite ver el primer mensaje sin eliminarlo.
         public Message Peek()
         {
-            return head?.Data;
+            return head?.Data; // Retorna el mensaje del nodo frontal sin eliminarlo.
         }
 
         /// Verifica si la cola está vacía.
         public bool IsEmpty()
         {
-            return Count == 0;
+            return Count == 0; // Retorna true si la cola está vacía, de lo contrario false.
         }
 
         /// Devuelve una representación en texto de todos los mensajes.
         public override string ToString()
         {
-            StringBuilder newMessage = new StringBuilder();
-            MessageNode current = head;
-            while (current != null)
+            StringBuilder newMessage = new StringBuilder(); // Crea un StringBuilder para construir la cadena de salida.
+            MessageNode current = head; // Comienza desde el nodo frontal.
+            while (current != null) // Recorre todos los nodos.
             {
-                newMessage.AppendLine(current.Data.ToString());
-                current = current.Next;
+                newMessage.AppendLine(current.Data.ToString()); // Añade la representación en texto del mensaje al StringBuilder.
+                current = current.Next; // Avanza al siguiente nodo.
             }
-            return newMessage.ToString();
+            return newMessage.ToString(); // Retorna la cadena construida.
         }
     }
 }
