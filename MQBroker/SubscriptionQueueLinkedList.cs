@@ -1,17 +1,21 @@
-﻿using System;
+﻿// Este archivo define una lista enlazada para administrar todas las colas de mensajes de cada suscriptor.
+// La lista permite agregar, encontrar, verificar y eliminar colas de mensajes asociadas a suscripciones (AppID, Topic).
 
-namespace MQBroker
+using System; // Importa el espacio de nombres System, que contiene clases fundamentales.
+
+namespace MQBroker // Define un espacio de nombres llamado MQBroker.
 {
     /// Nodo de la lista enlazada para SubscriptionQueue.
     public class SubscriptionQueueNode
     {
-        public SubscriptionQueue Data { get; set; }
-        public SubscriptionQueueNode Next { get; set; }
+        public SubscriptionQueue Data { get; set; } // Propiedad para almacenar la cola de suscripción.
+        public SubscriptionQueueNode Next { get; set; } // Propiedad para apuntar al siguiente nodo en la lista.
 
+        // Constructor que recibe la cola de suscripción a almacenar en el nodo.
         public SubscriptionQueueNode(SubscriptionQueue data)
         {
-            Data = data;
-            Next = null;
+            Data = data; // Asigna el valor del parámetro data a la propiedad Data.
+            Next = null; // Inicialmente, no hay siguiente nodo.
         }
     }
 
@@ -19,12 +23,13 @@ namespace MQBroker
     public class SubscriptionQueueLinkedList
     {
         private SubscriptionQueueNode head;  // Cabeza de la lista.
-        public int Count { get; private set; }
+        public int Count { get; private set; } // Propiedad para contar el número de nodos en la lista.
 
+        // Constructor que inicializa la lista vacía.
         public SubscriptionQueueLinkedList()
         {
-            head = null;
-            Count = 0;
+            head = null; // Inicializa la cabeza como null.
+            Count = 0; // Inicializa el contador de nodos como 0.
         }
 
         /// Agrega una nueva SubscriptionQueue si no existe para esa (AppID, Topic).
@@ -41,7 +46,7 @@ namespace MQBroker
             // Si la lista está vacía, hacemos que el nuevo nodo sea la cabeza
             if (head == null)
             {
-                head = newNode;
+                head = newNode; // Asigna el nuevo nodo a la cabeza.
             }
             else
             {
@@ -49,9 +54,9 @@ namespace MQBroker
                 SubscriptionQueueNode current = head;
                 while (current.Next != null)
                 {
-                    current = current.Next;
+                    current = current.Next; // Avanza al siguiente nodo.
                 }
-                current.Next = newNode;
+                current.Next = newNode; // Enlaza el nuevo nodo al final de la lista.
             }
 
             // Incrementamos el contador de nodos
@@ -67,9 +72,9 @@ namespace MQBroker
             {
                 if (current.Data.Subscription.Equals(subscription))
                 {
-                    return current.Data;
+                    return current.Data; // Retorna la cola de suscripción si coincide.
                 }
-                current = current.Next;
+                current = current.Next; // Avanza al siguiente nodo.
             }
 
             // Si no se encuentra, retornamos null
@@ -79,14 +84,14 @@ namespace MQBroker
         /// Elimina la SubscriptionQueue de la lista enlazada, si existe.
         public bool Remove(Subscription subscription)
         {
-            if (head == null)
+            if (head == null) // Si la lista está vacía, no hay nada que eliminar.
                 return false;
 
             // Si la suscripción que queremos eliminar está en la cabeza, la cambiamos
             if (head.Data.Subscription.Equals(subscription))
             {
-                head = head.Next;
-                Count--;
+                head = head.Next; // Avanza la cabeza al siguiente nodo.
+                Count--; // Decrementa el contador de nodos.
                 return true;
             }
 
@@ -96,11 +101,11 @@ namespace MQBroker
             {
                 if (current.Next.Data.Subscription.Equals(subscription))
                 {
-                    current.Next = current.Next.Next;
-                    Count--;
+                    current.Next = current.Next.Next; // Elimina el nodo de la lista.
+                    Count--; // Decrementa el contador de nodos.
                     return true;
                 }
-                current = current.Next;
+                current = current.Next; // Avanza al siguiente nodo.
             }
 
             return false; // No se encontró el nodo
@@ -120,7 +125,7 @@ namespace MQBroker
                 {
                     resultList.Add(current.Data.Subscription);  // Agregar la suscripción al resultado
                 }
-                current = current.Next;
+                current = current.Next; // Avanza al siguiente nodo.
             }
 
             // Devolvemos la lista resultante como un array
@@ -130,17 +135,20 @@ namespace MQBroker
         /// Convierte la lista enlazada a un array de SubscriptionQueue.
         private SubscriptionQueue[] ConvertListToArray(SubscriptionQueueLinkedList list)
         {
-            SubscriptionQueue[] result = new SubscriptionQueue[list.Count];
-            SubscriptionQueueNode current = list.head;
+            SubscriptionQueue[] result = new SubscriptionQueue[list.Count]; // Crea un array con el tamaño de la lista.
+            SubscriptionQueueNode current = list.head; // Comienza desde la cabeza de la lista.
             int index = 0;
 
-            while (current != null)
+            while (current != null) // Recorre todos los nodos.
             {
-                result[index++] = current.Data;
-                current = current.Next;
+                result[index++] = current.Data; // Añade la cola de suscripción al array.
+                current = current.Next; // Avanza al siguiente nodo.
             }
 
-            return result;
+            return result; // Retorna el array.
         }
     }
 }
+
+
+
