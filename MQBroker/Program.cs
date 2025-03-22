@@ -10,7 +10,7 @@ namespace MQBroker // Define un espacio de nombres llamado MQBroker.
     // Contiene el método Main, punto de entrada de la aplicación.
     class Program
     {
-        static void Main(string[] args) // Método principal, punto de entrada de la aplicación.
+        static void hola(string[] args) // Método principal, punto de entrada de la aplicación.
         {
             // Definimos el puerto en el cual el servidor MQBroker escuchará las conexiones.
             int port = 8080;
