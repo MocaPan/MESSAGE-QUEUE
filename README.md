@@ -1,2 +1,2 @@
 # MESSAGE-QUEUE
-Proyecto Estructuras y Algoritmos de Datos 1
+Sistema de mensajería asíncrona basado en colas (Message Queues), implementado en .NET. Desarrollado para Algoritmos y Estructuras de Datos
