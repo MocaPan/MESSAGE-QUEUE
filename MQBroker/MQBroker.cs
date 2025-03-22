@@ -7,6 +7,7 @@ using System.Net.Sockets; // Importa el espacio de nombres System.Net.Sockets, q
 using System.Text; // Importa el espacio de nombres System.Text, que contiene clases para manipulación de texto.
 using System.Threading; // Importa el espacio de nombres System.Threading, que contiene clases para trabajar con hilos.
 
+
 namespace MQBroker // Define un espacio de nombres llamado MQBroker.
 {
     public class MQBroker // Declara una clase pública llamada MQBroker.
@@ -246,3 +247,5 @@ namespace MQBroker // Define un espacio de nombres llamado MQBroker.
         }
     }
 }
+
+

@@ -2,6 +2,7 @@
 // Se encarga de iniciar el servidor MQBroker en un hilo independiente y esperar a que el usuario presione ENTER para detenerlo.
 
 using System.Threading; // Importa el espacio de nombres System.Threading, que contiene clases para trabajar con hilos.
+ // Importa el espacio de nombres MQClient, que contiene la clase MQClient.
 
 namespace MQBroker // Define un espacio de nombres llamado MQBroker.
 {
@@ -23,11 +24,19 @@ namespace MQBroker // Define un espacio de nombres llamado MQBroker.
 
             // Informamos al usuario que presione ENTER para detener el servidor.
             Console.WriteLine("Presione ENTER para detener el servidor...");
+            //  Aquí agregamos la prueba de MQClient 
+           
+
+
+
             Console.ReadLine(); // Espera a que el usuario presione ENTER.
 
             // Al presionar ENTER, se detiene el servidor.
             broker.Stop();
+            
+
         }
     }
 }
+
 
