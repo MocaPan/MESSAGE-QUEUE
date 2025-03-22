@@ -115,37 +115,35 @@ namespace MQBroker // Define un espacio de nombres llamado MQBroker.
         /// Esto se usa al hacer Publish, para encolar en cada suscriptor de ese Topic.
         public SubscriptionQueue[] FindAllByTopic(string topic)
         {
-            // Lista auxiliar para almacenar los nodos que coincidan con el Topic.
+            // 1. Contamos cuántos nodos tienen este 'topic'
+            int count = 0;
             SubscriptionQueueNode current = head;
-            SubscriptionQueueLinkedList resultList = new SubscriptionQueueLinkedList(); // Usamos nuestra propia lista enlazada
-
             while (current != null)
             {
                 if (current.Data.Subscription.Topic.Equals(topic, StringComparison.OrdinalIgnoreCase))
                 {
-                    resultList.Add(current.Data.Subscription);  // Agregar la suscripción al resultado
+                    count++;
                 }
-                current = current.Next; // Avanza al siguiente nodo.
+                current = current.Next;
             }
 
-            // Devolvemos la lista resultante como un array
-            return ConvertListToArray(resultList);
-        }
+            // 2. Creamos un array de tamaño 'count'
+            SubscriptionQueue[] result = new SubscriptionQueue[count];
 
-        /// Convierte la lista enlazada a un array de SubscriptionQueue.
-        private SubscriptionQueue[] ConvertListToArray(SubscriptionQueueLinkedList list)
-        {
-            SubscriptionQueue[] result = new SubscriptionQueue[list.Count]; // Crea un array con el tamaño de la lista.
-            SubscriptionQueueNode current = list.head; // Comienza desde la cabeza de la lista.
+            // 3. Recorremos de nuevo para llenarlo
+            current = head;
             int index = 0;
-
-            while (current != null) // Recorre todos los nodos.
+            while (current != null)
             {
-                result[index++] = current.Data; // Añade la cola de suscripción al array.
-                current = current.Next; // Avanza al siguiente nodo.
+                if (current.Data.Subscription.Topic.Equals(topic, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Usamos LA MISMA COLA
+                    result[index++] = current.Data;
+                }
+                current = current.Next;
             }
 
-            return result; // Retorna el array.
+            return result;
         }
     }
 }
