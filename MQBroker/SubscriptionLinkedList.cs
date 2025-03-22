@@ -1,7 +1,10 @@
-﻿using System;
-using System.Text;
+﻿// Este archivo define una lista enlazada simple para manejar suscripciones a temas por parte de aplicaciones o clientes.
+// La lista permite agregar, encontrar, verificar y eliminar suscripciones, así como obtener una representación en cadena de todas las suscripciones.
 
-namespace MQBroker
+using System; // Importa el espacio de nombres System, que contiene clases fundamentales.
+using System.Text; // Importa el espacio de nombres System.Text, que contiene clases para manipulación de texto.
+
+namespace MQBroker // Define un espacio de nombres llamado MQBroker.
 {
     // Clase que representa un nodo en la lista enlazada de suscripciones.
     // Contiene:
@@ -9,14 +12,14 @@ namespace MQBroker
     //  - Next: referencia al siguiente nodo en la lista.
     public class SubscriptionNode
     {
-        public Subscription Data { get; set; }
-        public SubscriptionNode Next { get; set; }
+        public Subscription Data { get; set; } // Propiedad para almacenar la suscripción.
+        public SubscriptionNode Next { get; set; } // Propiedad para apuntar al siguiente nodo en la lista.
 
         // Constructor que recibe la suscripción a almacenar en el nodo.
         public SubscriptionNode(Subscription data)
         {
-            this.Data = data;
-            this.Next = null; // Inicialmente, no hay siguiente.
+            this.Data = data; // Asigna el valor del parámetro data a la propiedad Data.
+            this.Next = null; // Inicialmente, no hay siguiente nodo.
         }
     }
 
@@ -33,8 +36,8 @@ namespace MQBroker
         // Constructor que inicializa la lista vacía.
         public SubscriptionLinkedList()
         {
-            this.head = null;
-            Count = 0;
+            this.head = null; // Inicializa la cabeza como null.
+            Count = 0; // Inicializa el contador de nodos como 0.
         }
 
         // Método para agregar una nueva suscripción al final de la lista,
@@ -51,7 +54,7 @@ namespace MQBroker
             // Si la lista está vacía, el nuevo nodo pasa a ser la cabeza.
             if (this.head == null)
             {
-                this.head = newNode;
+                this.head = newNode; // Asigna el nuevo nodo a la cabeza.
             }
             else
             {
@@ -59,9 +62,9 @@ namespace MQBroker
                 SubscriptionNode current = this.head;
                 while (current.Next != null)
                 {
-                    current = current.Next;
+                    current = current.Next; // Avanza al siguiente nodo.
                 }
-                current.Next = newNode;
+                current.Next = newNode; // Enlaza el nuevo nodo al final de la lista.
             }
 
             // Incrementamos el contador de nodos.
@@ -71,7 +74,7 @@ namespace MQBroker
         // Método para encontrar un nodo en la lista que coincida con el appID y topic.
         public SubscriptionNode Find(string appID, string topic)
         {
-            SubscriptionNode current = this.head;
+            SubscriptionNode current = this.head; // Comienza desde la cabeza.
 
             // Recorremos la lista y comparamos con los valores recibidos.
             while (current != null)
@@ -80,9 +83,9 @@ namespace MQBroker
                 if (current.Data.AppID.Equals(appID, StringComparison.OrdinalIgnoreCase) &&
                     current.Data.Topic.Equals(topic, StringComparison.OrdinalIgnoreCase))
                 {
-                    return current;
+                    return current; // Retorna el nodo si coincide.
                 }
-                current = current.Next;
+                current = current.Next; // Avanza al siguiente nodo.
             }
 
             // Si no se encuentra, retornamos null.
@@ -106,8 +109,8 @@ namespace MQBroker
             // Si la suscripción a eliminar está en la cabeza, reasignamos la cabeza.
             if (this.head.Data.Equals(subscription))
             {
-                this.head = this.head.Next;
-                Count--;
+                this.head = this.head.Next; // Avanza la cabeza al siguiente nodo.
+                Count--; // Decrementa el contador de nodos.
                 return true;
             }
 
@@ -119,11 +122,11 @@ namespace MQBroker
                 // "saltamos" ese nodo en la cadena enlazada.
                 if (current.Next.Data.Equals(subscription))
                 {
-                    current.Next = current.Next.Next;
-                    Count--;
+                    current.Next = current.Next.Next; // Elimina el nodo de la lista.
+                    Count--; // Decrementa el contador de nodos.
                     return true;
                 }
-                current = current.Next;
+                current = current.Next; // Avanza al siguiente nodo.
             }
 
             // Si no se encontró, retornamos false.
@@ -133,16 +136,19 @@ namespace MQBroker
         // Representación en cadena de todas las suscripciones de la lista.
         public override string ToString()
         {
-            StringBuilder newString = new StringBuilder();
-            SubscriptionNode current = this.head;
+            StringBuilder newString = new StringBuilder(); // Crea un StringBuilder para construir la cadena de salida.
+            SubscriptionNode current = this.head; // Comienza desde la cabeza.
 
-            while (current != null)
+            while (current != null) // Recorre todos los nodos.
             {
-                newString.AppendLine(current.Data.ToString());
-                current = current.Next;
+                newString.AppendLine(current.Data.ToString()); // Añade la representación en texto de la suscripción al StringBuilder.
+                current = current.Next; // Avanza al siguiente nodo.
             }
 
-            return newString.ToString();
+            return newString.ToString(); // Retorna la cadena construida.
         }
     }
 }
+
+
+
