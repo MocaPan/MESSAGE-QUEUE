@@ -3,7 +3,7 @@
 
 using System; // Importa el espacio de nombres System, que contiene clases fundamentales.
 
-namespace MQBroker // Define un espacio de nombres llamado MQBroker.
+namespace NSMQBroker // Define un espacio de nombres llamado MQBroker.
 {
     /// Asocia una suscripción (AppID, Topic) con una cola de mensajes (MessageLinkedList).
     public class SubscriptionQueue

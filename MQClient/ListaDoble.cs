@@ -60,36 +60,34 @@ namespace EstructurasPersonalizadas
         }
 
         /// <summary>
-        /// Obtiene el valor almacenado en una posición específica de la lista.
-        /// Utiliza un recorrido desde <c>cabeza</c> o <c>cola</c> según la cercanía al índice.
+        /// Agrega un nuevo elemento al final de la lista (alias de Agregar).
         /// </summary>
-        /// <param name="indice">Posición del elemento a obtener (basado en 0).</param>
-        /// <returns>El valor almacenado en la posición indicada.</returns>
-        /// <exception cref="IndexOutOfRangeException">
-        /// Se lanza si el índice está fuera del rango de la lista.
-        /// </exception>
-        public override T Obtener(int indice)
+        /// <param name="valor">El valor del elemento a agregar.</param>
+        public void AddLast(T valor)
         {
-            if (indice < 0 || indice >= tamaño)
-                throw new IndexOutOfRangeException("Índice fuera de rango");
+            Agregar(valor);
+        }
 
-            NodoDoble<T> actual;
+        /// <summary>
+        /// Agrega un nuevo elemento al principio de la lista.
+        /// </summary>
+        /// <param name="valor">El valor del elemento a agregar.</param>
+        public void AddFirst(T valor)
+        {
+            NodoDoble<T> nuevoNodo = new NodoDoble<T>(valor);
 
-            // Determinar si recorrer desde cabeza o desde cola
-            if (indice < tamaño / 2)
+            if (cabeza == null)
             {
-                actual = cabeza;
-                for (int i = 0; i < indice; i++)
-                    actual = actual.Siguiente;
+                cabeza = cola = nuevoNodo;
             }
             else
             {
-                actual = cola;
-                for (int i = tamaño - 1; i > indice; i--)
-                    actual = actual.Anterior;
+                nuevoNodo.Siguiente = cabeza;
+                cabeza.Anterior = nuevoNodo;
+                cabeza = nuevoNodo;
             }
 
-            return actual.Valor;
+            tamaño++;
         }
 
         /// <summary>
@@ -132,6 +130,77 @@ namespace EstructurasPersonalizadas
         }
 
         /// <summary>
+        /// Elimina el primer elemento de la lista.
+        /// </summary>
+        public void RemoveFirst()
+        {
+            if (cabeza == null)
+                throw new InvalidOperationException("La lista está vacía");
+
+            cabeza = cabeza.Siguiente;
+            if (cabeza != null)
+                cabeza.Anterior = null;
+            else
+                cola = null; // Si la lista queda vacía, también actualizamos cola
+
+            tamaño--;
+        }
+
+        /// <summary>
+        /// Elimina el último elemento de la lista.
+        /// </summary>
+        public void RemoveLast()
+        {
+            if (cola == null)
+                throw new InvalidOperationException("La lista está vacía");
+
+            if (cabeza == cola)
+            {
+                cabeza = cola = null; // Si hay un solo elemento
+            }
+            else
+            {
+                cola = cola.Anterior;
+                cola.Siguiente = null;
+            }
+
+            tamaño--;
+        }
+
+        /// <summary>
+        /// Obtiene el valor almacenado en una posición específica de la lista.
+        /// Utiliza un recorrido desde <c>cabeza</c> o desde <c>cola</c> según la cercanía al índice.
+        /// </summary>
+        /// <param name="indice">Posición del elemento a obtener (basado en 0).</param>
+        /// <returns>El valor almacenado en la posición indicada.</returns>
+        /// <exception cref="IndexOutOfRangeException">
+        /// Se lanza si el índice está fuera del rango de la lista.
+        /// </exception>
+        public override T Obtener(int indice)
+        {
+            if (indice < 0 || indice >= tamaño)
+                throw new IndexOutOfRangeException("Índice fuera de rango");
+
+            NodoDoble<T> actual;
+
+            // Determinar si recorrer desde cabeza o desde cola
+            if (indice < tamaño / 2)
+            {
+                actual = cabeza;
+                for (int i = 0; i < indice; i++)
+                    actual = actual.Siguiente;
+            }
+            else
+            {
+                actual = cola;
+                for (int i = tamaño - 1; i > indice; i--)
+                    actual = actual.Anterior;
+            }
+
+            return actual.Valor;
+        }
+
+        /// <summary>
         /// Implementación del método abstracto para obtener el siguiente nodo en una lista doblemente enlazada.
         /// </summary>
         /// <param name="nodo">Nodo actual.</param>
@@ -139,6 +208,65 @@ namespace EstructurasPersonalizadas
         protected override NodoDoble<T> ObtenerSiguiente(NodoDoble<T> nodo)
         {
             return nodo.Siguiente;
+        }
+
+        /// <summary>
+        /// Verifica si el valor existe en la lista.
+        /// </summary>
+        /// <param name="valor">Valor a verificar en la lista.</param>
+        /// <returns>True si el valor está presente en la lista, de lo contrario false.</returns>
+        public bool Contiene(T valor)
+        {
+            NodoDoble<T> actual = cabeza;
+            while (actual != null)
+            {
+                if (actual.Valor.Equals(valor))
+                    return true;
+                actual = actual.Siguiente;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Limpia todos los elementos de la lista.
+        /// </summary>
+        public void Limpiar()
+        {
+            cabeza = cola = null;
+            tamaño = 0;
+        }
+
+        /// <summary>
+        /// Devuelve el primer elemento de la lista.
+        /// </summary>
+        public T PrimerElemento()
+        {
+            if (cabeza == null)
+                throw new InvalidOperationException("La lista está vacía");
+            return cabeza.Valor;
+        }
+
+        /// <summary>
+        /// Devuelve el último elemento de la lista.
+        /// </summary>
+        public T UltimoElemento()
+        {
+            if (cola == null)
+                throw new InvalidOperationException("La lista está vacía");
+            return cola.Valor;
+        }
+
+        /// <summary>
+        /// Muestra todos los elementos de la lista en orden.
+        /// </summary>
+        public void Mostrar()
+        {
+            NodoDoble<T> actual = cabeza;
+            while (actual != null)
+            {
+                Console.WriteLine(actual.Valor);
+                actual = actual.Siguiente;
+            }
         }
     }
 }

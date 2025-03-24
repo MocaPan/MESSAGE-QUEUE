@@ -1,50 +1,61 @@
 ﻿using System;
 using System.Threading;
-using MQClientLibrary; // Importa MQClient
-using MQBroker; // Importa MQBroker
-using EstructurasParaMQBroker; // Importa Topic
+using NSMQBroker;
+using NSMQClient;
 
-class TestProgram
+namespace NSMQBroker
 {
-    static void Main(string[] args)
+    using BrokerMessage = NSMQBroker.Message;
+    using ClientMessage = NSMQClient.Message;
+
+    class Program
     {
-        int port = 8080;
-
-        // Iniciar el servidor MQBroker en un hilo separado
-        MQBroker.MQBroker broker = new MQBroker.MQBroker(port);
-        Thread serverThread = new Thread(new ThreadStart(broker.Start));
-        serverThread.Start();
-
-        Console.WriteLine("🟢 MQBroker iniciado en el puerto 8080.");
-        Thread.Sleep(2000); // Espera para asegurar que el servidor esté activo
-
-        try
+        static void Main(string[] args)
         {
-            Console.WriteLine("🔵 Iniciando MQClient...");
-            MQClient client = new MQClient("127.0.0.1", port, Guid.NewGuid());
+            try
+            {
+                // Iniciar el broker en un hilo separado
+                Thread brokerThread = new Thread(() =>
+                {
+                    MQBroker broker = new MQBroker(5000);
+                    broker.Start();
+                });
+                brokerThread.Start();
 
-            // Prueba de Subscribe()
-            Topic topic = new Topic("Noticias");
-            Console.WriteLine($"📢 Intentando suscribirse a: {topic.Name}");
+                Thread.Sleep(1000); // Espera para asegurar que el broker está corriendo
 
-            bool suscrito = client.Subscribe(topic);
+                // Crear un cliente y probar los métodos
+                Guid appId = Guid.NewGuid();
+                MQClient client = new MQClient("127.0.0.1", 5000, appId);
+                Topic topic = new Topic("TestTopic");
 
-            if (suscrito)
-                Console.WriteLine($"✅ Prueba exitosa: Suscripción a '{topic.Name}' realizada.");
-            else
-                Console.WriteLine($"❌ Prueba fallida: No se pudo suscribir a '{topic.Name}'.");
+                Console.WriteLine("Probando suscripción...");
+                bool suscripcionExitosa = client.Subscribe(topic);
+                Console.WriteLine(suscripcionExitosa ? "Suscripción exitosa" : "Error en suscripción");
 
-            client.Close();
-            Console.WriteLine("🛑 Prueba de MQClient completada.");
+                Console.WriteLine("Probando publicación...");
+                ClientMessage message = new ClientMessage("Hola, este es un mensaje de prueba.");
+                bool publicacionExitosa = client.Publish(message, topic);
+                Console.WriteLine(publicacionExitosa ? "Publicación exitosa" : "Error en publicación");
+
+                Console.WriteLine("Probando recepción...");
+                ClientMessage receivedMessage = client.Receive(topic);
+                Console.WriteLine(receivedMessage != null
+                    ? $"Mensaje recibido: {receivedMessage}"
+                    : "No hay mensajes disponibles");
+
+                Console.WriteLine("Probando desuscripción...");
+                bool desuscripcionExitosa = client.Unsubscribe(topic);
+                Console.WriteLine(desuscripcionExitosa ? "Desuscripción exitosa" : "Error en desuscripción");
+
+                // Cerrar cliente
+                client.Close();
+                Console.WriteLine("Cliente cerrado.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ocurrió un error: {ex.Message}");
+            }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"❌ Error en la prueba: {ex.Message}");
-        }
-
-        Console.WriteLine("⏳ Presione ENTER para detener el servidor...");
-        Console.ReadLine();
-
-        broker.Stop();
     }
 }

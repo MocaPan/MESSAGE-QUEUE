@@ -1,10 +1,11 @@
-﻿using System;
+﻿using NSMQBroker;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-namespace MQBroker
+namespace NSMQBroker
 {
     public class MQBroker
     {
@@ -106,16 +107,10 @@ namespace MQBroker
                             string appID = parts[1];
                             string topic = parts[2];
 
-                            // 🔹 Se crea un StreamWriter global para que no se cierre antes de enviar la respuesta
-                            StreamWriter writer = new StreamWriter(stream, Encoding.UTF8, leaveOpen: true);
-                            writer.AutoFlush = true;
-
                             if (command == "SUBSCRIBE")
                             {
-                                Subscribe(appID, topic, writer);
-                                Console.WriteLine($"📤 Enviando SUBSCRIBE_OK a {appID} para el tema {topic}");
-                                writer.WriteLine("SUBSCRIBE_OK"); // 🔹 Asegura que se envía la confirmación
-                                writer.Flush();
+                                Subscribe(appID, topic);
+                                SendResponse(stream, $"Suscripción añadida: AppID={appID}, Topic={topic}");
                             }
                             else if (command == "UNSUBSCRIBE")
                             {
@@ -179,39 +174,23 @@ namespace MQBroker
         /// Registra una suscripción (AppID, Topic).
         /// Si ya existe, no la vuelve a crear. Además, crea la cola de mensajes correspondiente.
         /// </summary>
-
-        public void Subscribe(string appID, string topic, StreamWriter writer)
+        public void Subscribe(string appID, string topic)
         {
             Subscription newSub = new Subscription(appID, topic);
 
-            if (!subscriptions.Contains(newSub)) // Se usa Contains() en lugar de Contiene()
+            if (!subscriptions.Contains(newSub))
             {
-                subscriptions.Add(newSub); // Se usa Add() en lugar de Agregar()
-                Console.WriteLine("✅ Nueva suscripción agregada: " + newSub.ToString());
+                subscriptions.Add(newSub);
+                Console.WriteLine("Nueva suscripción agregada: " + newSub.ToString());
             }
             else
             {
-                Console.WriteLine("⚠ La suscripción ya existe: " + newSub.ToString());
+                Console.WriteLine("La suscripción ya existe: " + newSub.ToString());
             }
 
             // Creamos también la cola de mensajes para este suscriptor (si no existe).
-            if (subscriptionQueues.Find(newSub) == null)
-            {
-                subscriptionQueues.Add(newSub);
-                Console.WriteLine($"✅ Cola de mensajes creada para {newSub}");
-            }
-            else
-            {
-                Console.WriteLine($"⚠ La cola de mensajes ya existía para {newSub}");
-            }
-
-            // 🔹 Envía respuesta al cliente para confirmar la suscripción
-            writer.WriteLine("SUBSCRIBE_OK");
-            writer.Flush();
+            subscriptionQueues.Add(newSub);
         }
-
-
-
 
         /// <summary>
         /// Elimina la suscripción (AppID, Topic) de la lista y su cola de mensajes.

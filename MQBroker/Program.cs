@@ -4,11 +4,11 @@
 using System.Threading; // Importa el espacio de nombres System.Threading, que contiene clases para trabajar con hilos.
  // Importa el espacio de nombres MQClient, que contiene la clase MQClient.
 
-namespace MQBroker // Define un espacio de nombres llamado MQBroker.
+namespace NSMQBroker // Define un espacio de nombres llamado MQBroker.
 {
     // Clase principal del proyecto.
     // Contiene el método Main, punto de entrada de la aplicación.
-    class Program
+    class Progra
     {
         static void hola(string[] args) // Método principal, punto de entrada de la aplicación.
         {

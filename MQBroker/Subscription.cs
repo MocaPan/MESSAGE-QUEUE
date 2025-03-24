@@ -6,7 +6,7 @@ using System.Linq; // Importa el espacio de nombres System.Linq, que contiene cl
 using System.Text; // Importa el espacio de nombres System.Text, que contiene clases para manipulación de texto.
 using System.Threading.Tasks; // Importa el espacio de nombres System.Threading.Tasks, que contiene clases para tareas asincrónicas.
 
-namespace MQBroker // Define un espacio de nombres llamado MQBroker.
+namespace NSMQBroker // Define un espacio de nombres llamado MQBroker.
 {
     // Clase que encapsula la información de una suscripción:
     // - AppID: Identificador de la aplicación o cliente.

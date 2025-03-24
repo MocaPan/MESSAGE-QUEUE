@@ -2,7 +2,7 @@
 
 using System; // Importa el espacio de nombres System, que contiene clases fundamentales.
 
-namespace MQBroker // Define un espacio de nombres llamado MQBroker.
+namespace NSMQBroker // Define un espacio de nombres llamado MQBroker.
 {
     public class Message // Declara una clase pública llamada Message.
     {

@@ -3,7 +3,7 @@
 using System; // Importa el espacio de nombres System, que contiene clases fundamentales.
 using System.Text; // Importa el espacio de nombres System.Text, que contiene clases para manipulación de texto.
 
-namespace MQBroker // Define un espacio de nombres llamado MQBroker.
+namespace NSMQBroker // Define un espacio de nombres llamado MQBroker.
 {
     internal class MessageNode // Declara una clase interna llamada MessageNode.
     {
