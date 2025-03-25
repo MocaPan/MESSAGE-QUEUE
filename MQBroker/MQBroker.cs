@@ -1,19 +1,11 @@
-<<<<<<< HEAD
-﻿using NSMQBroker;
-using System;
-=======
+
 ﻿using System;
->>>>>>> 8d92e996529a44b58fd1efa898352a040b030f21
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-<<<<<<< HEAD
 namespace NSMQBroker
-=======
-namespace MQBroker
->>>>>>> 8d92e996529a44b58fd1efa898352a040b030f21
 {
     public class MQBroker
     {
@@ -118,24 +110,16 @@ namespace MQBroker
                             if (command == "SUBSCRIBE")
                             {
                                 Subscribe(appID, topic);
-<<<<<<< HEAD
-                                SendResponse(stream, $"Suscripción añadida: AppID={appID}, Topic={topic}");
-=======
                                 SendResponse(stream, "SUBSCRIBE_OK");
                                 SendResponse(stream, $"Suscripción añadida: AppID={appID}, Topic={topic}");
                                 
->>>>>>> 8d92e996529a44b58fd1efa898352a040b030f21
                             }
                             else if (command == "UNSUBSCRIBE")
                             {
                                 Unsubscribe(appID, topic);
-<<<<<<< HEAD
-                                SendResponse(stream, $"Suscripción eliminada: AppID={appID}, Topic={topic}");
-=======
                                 SendResponse(stream, "UNSUBSCRIBE_OK");
                                 SendResponse(stream, $"Suscripción eliminada: AppID={appID}, Topic={topic}");
                                 
->>>>>>> 8d92e996529a44b58fd1efa898352a040b030f21
                             }
                             else if (command == "PUBLISH")
                             {
@@ -144,13 +128,9 @@ namespace MQBroker
                                     // El mensaje puede tener espacios, lo reconstruimos
                                     string messageContent = string.Join(" ", parts, 3, parts.Length - 3);
                                     Publish(appID, topic, messageContent);
-<<<<<<< HEAD
-                                    SendResponse(stream, $"Mensaje publicado en Topic={topic}");
-=======
                                     SendResponse(stream, "OK");
                                     SendResponse(stream, $"Mensaje publicado en Topic={topic}");
                                     
->>>>>>> 8d92e996529a44b58fd1efa898352a040b030f21
                                 }
                                 else
                                 {
@@ -166,35 +146,23 @@ namespace MQBroker
                                 }
                                 else
                                 {
-<<<<<<< HEAD
-                                    SendResponse(stream, $"Mensaje recibido: {msgContent}");
-=======
                                     SendResponse(stream, "MESSAGE_RECEIVED");
                                     SendResponse(stream, $"Mensaje recibido: {msgContent}");
                                     
->>>>>>> 8d92e996529a44b58fd1efa898352a040b030f21
                                 }
                             }
                             else
                             {
-<<<<<<< HEAD
-                                SendResponse(stream, "Comando desconocido.");
-=======
                                 SendResponse(stream, "ERROR");
                                 SendResponse(stream, "Comando desconocido.");
                                 
->>>>>>> 8d92e996529a44b58fd1efa898352a040b030f21
                             }
                         }
                         else
                         {
-<<<<<<< HEAD
-                            SendResponse(stream, "Formato incorrecto. Se espera: COMMAND AppID Topic [Mensaje]");
-=======
                             SendResponse(stream, "ERROR");
                             SendResponse(stream, "Formato incorrecto. Se espera: COMMAND AppID Topic [Mensaje]");
                             
->>>>>>> 8d92e996529a44b58fd1efa898352a040b030f21
                         }
                     }
                 }
