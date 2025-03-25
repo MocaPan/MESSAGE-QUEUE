@@ -110,11 +110,13 @@ namespace MQBroker
                             {
                                 Subscribe(appID, topic);
                                 SendResponse(stream, $"Suscripción añadida: AppID={appID}, Topic={topic}");
+                                SendResponse(stream, "SUBSCRIBE_OK");
                             }
                             else if (command == "UNSUBSCRIBE")
                             {
                                 Unsubscribe(appID, topic);
                                 SendResponse(stream, $"Suscripción eliminada: AppID={appID}, Topic={topic}");
+                                SendResponse(stream, "UNSUBSCRIBE_OK");
                             }
                             else if (command == "PUBLISH")
                             {
@@ -124,6 +126,7 @@ namespace MQBroker
                                     string messageContent = string.Join(" ", parts, 3, parts.Length - 3);
                                     Publish(appID, topic, messageContent);
                                     SendResponse(stream, $"Mensaje publicado en Topic={topic}");
+                                    SendResponse(stream, "OK");
                                 }
                                 else
                                 {
@@ -140,22 +143,26 @@ namespace MQBroker
                                 else
                                 {
                                     SendResponse(stream, $"Mensaje recibido: {msgContent}");
+                                    SendResponse(stream, "MESSAGE_RECEIVED");
                                 }
                             }
                             else
                             {
                                 SendResponse(stream, "Comando desconocido.");
+                                SendResponse(stream, "ERROR");
                             }
                         }
                         else
                         {
                             SendResponse(stream, "Formato incorrecto. Se espera: COMMAND AppID Topic [Mensaje]");
+                            SendResponse(stream, "ERROR");
                         }
                     }
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Error al procesar cliente: " + ex.Message);
+                    SendResponse(stream, "ERROR");
                 }
             }
         }
