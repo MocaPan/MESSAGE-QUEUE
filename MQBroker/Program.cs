@@ -8,12 +8,12 @@ namespace NSMQBroker // Define un espacio de nombres llamado MQBroker.
 {
     // Clase principal del proyecto.
     // Contiene el método Main, punto de entrada de la aplicación.
-    class Progra
+    class Program
     {
-        static void hola(string[] args) // Método principal, punto de entrada de la aplicación.
+        static void Main(string[] args) // Método principal, punto de entrada de la aplicación.
         {
             // Definimos el puerto en el cual el servidor MQBroker escuchará las conexiones.
-            int port = 8080;
+            int port = 9090;
 
             // Instanciamos el servidor, pasándole el puerto.
             MQBroker broker = new MQBroker(port);
