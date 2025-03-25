@@ -109,14 +109,16 @@ namespace MQBroker
                             if (command == "SUBSCRIBE")
                             {
                                 Subscribe(appID, topic);
-                                SendResponse(stream, $"Suscripción añadida: AppID={appID}, Topic={topic}");
                                 SendResponse(stream, "SUBSCRIBE_OK");
+                                SendResponse(stream, $"Suscripción añadida: AppID={appID}, Topic={topic}");
+                                
                             }
                             else if (command == "UNSUBSCRIBE")
                             {
                                 Unsubscribe(appID, topic);
-                                SendResponse(stream, $"Suscripción eliminada: AppID={appID}, Topic={topic}");
                                 SendResponse(stream, "UNSUBSCRIBE_OK");
+                                SendResponse(stream, $"Suscripción eliminada: AppID={appID}, Topic={topic}");
+                                
                             }
                             else if (command == "PUBLISH")
                             {
@@ -125,8 +127,9 @@ namespace MQBroker
                                     // El mensaje puede tener espacios, lo reconstruimos
                                     string messageContent = string.Join(" ", parts, 3, parts.Length - 3);
                                     Publish(appID, topic, messageContent);
-                                    SendResponse(stream, $"Mensaje publicado en Topic={topic}");
                                     SendResponse(stream, "OK");
+                                    SendResponse(stream, $"Mensaje publicado en Topic={topic}");
+                                    
                                 }
                                 else
                                 {
@@ -142,20 +145,23 @@ namespace MQBroker
                                 }
                                 else
                                 {
-                                    SendResponse(stream, $"Mensaje recibido: {msgContent}");
                                     SendResponse(stream, "MESSAGE_RECEIVED");
+                                    SendResponse(stream, $"Mensaje recibido: {msgContent}");
+                                    
                                 }
                             }
                             else
                             {
-                                SendResponse(stream, "Comando desconocido.");
                                 SendResponse(stream, "ERROR");
+                                SendResponse(stream, "Comando desconocido.");
+                                
                             }
                         }
                         else
                         {
-                            SendResponse(stream, "Formato incorrecto. Se espera: COMMAND AppID Topic [Mensaje]");
                             SendResponse(stream, "ERROR");
+                            SendResponse(stream, "Formato incorrecto. Se espera: COMMAND AppID Topic [Mensaje]");
+                            
                         }
                     }
                 }
