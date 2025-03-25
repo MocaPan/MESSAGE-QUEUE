@@ -145,6 +145,7 @@ namespace NSMQBroker // Define un espacio de nombres llamado MQBroker.
 
             return result;
         }
+
     }
 }
 
