@@ -201,5 +201,74 @@ namespace EstructurasPersonalizadas
         {
             return nodo.Siguiente;
         }
+
+        /// <summary>
+        /// Recorre la lista y retorna los elementos como un string.
+        /// </summary>
+        /// <returns>Un string con los elementos de la lista, separados por comas.</returns>
+        public string Recorrer()
+        {
+            NodoSimple<T> actual = cabeza;
+            string resultado = "";
+
+            while (actual != null)
+            {
+                // Si no es el primer elemento, agregar una coma
+                if (resultado != "")
+                    resultado += ", ";
+
+                resultado += actual.Valor.ToString();  // Convierte el valor del nodo a string
+                actual = actual.Siguiente;
+            }
+
+            return resultado;
+        }
+
+        /// <summary>
+        /// Recorre la lista y compara cada elemento con el string dado.
+        /// </summary>
+        /// <param name="comparar">El string con el que se compararán los elementos de la lista.</param>
+        /// <returns>Un string con los elementos que coincidan con el string dado, separados por comas.</returns>
+        /// <summary>
+        /// Recorre la lista y compara cada elemento con el string dado.
+        /// </summary>
+        /// <param name="comparar">El string con el que se compararán los elementos de la lista.</param>
+        /// <returns>Devuelve <c>true</c> si hay al menos un elemento que coincida, <c>false</c> si no hay coincidencias.</returns>
+        public bool Contiene(string comparar)
+        {
+            NodoSimple<T> actual = cabeza;
+
+            while (actual != null)
+            {
+                if (actual.Valor.ToString() == comparar)  // Compara el valor del nodo con el string dado
+                {
+                    return true;  // Si hay una coincidencia, retorna true
+                }
+                actual = actual.Siguiente;
+            }
+
+            return false;  // Si no se encuentra ninguna coincidencia, retorna false
+        }
+
+
+        public void RecorrerEscribe(RichTextBox caja)
+        {
+            NodoSimple<T> nodoActual = cabeza; // Usar 'cabeza' en lugar de 'Primero'
+
+            // Recorrer la lista desde el primer nodo
+            caja.Clear();
+            while (nodoActual != null)
+            {
+                // Escribir el valor del nodo en el RichTextBox
+                caja.Text += nodoActual.Valor.ToString() + Environment.NewLine;
+
+                // Pasar al siguiente nodo
+                nodoActual = nodoActual.Siguiente;
+            }
+        }
+
+
     }
+
+
 }

@@ -12,7 +12,7 @@ namespace NSMQClient
         private Guid appId; // Identificador único de la aplicación
 
         // Constructor que recibe la IP del servidor, el puerto y el ID de la aplicación
-        public MQClient(string serverIp, int port, Guid appId)
+        public MQClient(string serverIp, int port, Guid appId, GroupBox Frame, Button ConectarB)
         {
             this.appId = appId; // Asignar el appId recibido
             client = new TcpClient(); // Crear una nueva instancia de TcpClient
@@ -22,6 +22,8 @@ namespace NSMQClient
                 client.Connect(serverIp, port);
                 stream = client.GetStream(); // Obtener el flujo de red para la comunicación
                 MessageBox.Show("[Info] Conectado al servidor."); // Mensaje de éxito en la conexión
+                Frame.Visible = true;
+                ConectarB.Visible = false;
             }
             catch (Exception ex)
             {
