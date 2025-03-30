@@ -110,14 +110,14 @@ namespace NSMQBroker
                             {
                                 Subscribe(appID, topic);
                              
-                                SendResponse(stream, $"Suscripción añadida: AppID={appID}, Topic={topic}");
+                                SendResponse(stream, $"");
                                 
                             }
                             else if (command == "UNSUBSCRIBE")
                             {
                                 Unsubscribe(appID, topic);
                                 
-                                SendResponse(stream, $"Suscripción eliminada: AppID={appID}, Topic={topic}");
+                                SendResponse(stream, $"");
                                 
                             }
                             else if (command == "PUBLISH")
@@ -128,12 +128,12 @@ namespace NSMQBroker
                                     string messageContent = string.Join(" ", parts, 3, parts.Length - 3);
                                     Publish(appID, topic, messageContent);
                                     
-                                    SendResponse(stream, $"Mensaje publicado en Topic={topic}");
+                                    SendResponse(stream, $"");
                                     
                                 }
                                 else
                                 {
-                                    SendResponse(stream, "Formato incorrecto para PUBLISH. Se espera: PUBLISH <AppID> <Topic> <Mensaje>");
+                                    SendResponse(stream, "");
                                 }
                             }
                             else if (command == "RECEIVE")
@@ -141,26 +141,26 @@ namespace NSMQBroker
                                 string msgContent = ReceiveMessage(appID, topic);
                                 if (string.IsNullOrEmpty(msgContent))
                                 {
-                                    SendResponse(stream, "No hay mensajes disponibles o no está suscrito.");
+                                    SendResponse(stream, "No hay mensajes disponibles o no está suscrito." + "\n");
                                 }
                                 else
                                 {
                                     
-                                    SendResponse(stream, $"Mensaje recibido: {msgContent}");
+                                    SendResponse(stream, $"       {msgContent}" + "\n");
                                     
                                 }
                             }
                             else
                             {
                                 
-                                SendResponse(stream, "Comando desconocido.");
+                                SendResponse(stream, "");
                                 
                             }
                         }
                         else
                         {
                             
-                            SendResponse(stream, "Formato incorrecto. Se espera: COMMAND AppID Topic [Mensaje]");
+                            SendResponse(stream, "");
                             
                         }
                     }
@@ -182,6 +182,7 @@ namespace NSMQBroker
             stream.Write(responseBytes, 0, responseBytes.Length);
         }
 
+        
         /// <summary>
         /// Registra una suscripción (AppID, Topic).
         /// Si ya existe, no la vuelve a crear. Además, crea la cola de mensajes correspondiente.

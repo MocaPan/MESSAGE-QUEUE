@@ -25,6 +25,7 @@ namespace MQClientGUI
         public Form1()
         {
             InitializeComponent();
+            // Inicializa el cliente MQClient a null
             Frame1.Visible = false;
             HistorialBox.ReadOnly = false;
             TemasSubs.ReadOnly = false;
@@ -33,6 +34,7 @@ namespace MQClientGUI
             this.Topics = new ListaSimple<string>();
             this.Mensajes = new ListaSimple<string>();
             this.Historial = new ListaSimple<string>();
+            
 
 
 
@@ -149,11 +151,11 @@ namespace MQClientGUI
 
             if (validacion.ValidarPort(MQPort))
             {
-                MessageBox.Show("Puerto valido");
+                
                 int MQPortInt = Convert.ToInt32(MQPort);
                 if (validacion.ValidarIp(MQIP))
                 {
-                    MessageBox.Show("IP valida");
+                    
                     Guid appIdG = Guid.NewGuid();
                     MQClient client = new MQClient(MQIP, MQPortInt, appIdG, Frame1, ConectarB);
                     this.client = client;
@@ -166,7 +168,7 @@ namespace MQClientGUI
             }
             else
             {
-                MessageBox.Show("IP Invalida");
+                MessageBox.Show("Puerto Invalida");
             }
 
         }
@@ -235,17 +237,11 @@ namespace MQClientGUI
                 return;
             }
 
-            // Intenta suscribirse solo si no está ya suscrito
-            if (!Topics.Contiene(TextTopic.Text))
-            {
-                TrySub();
-            }
+           
+
 
             client.Publish(TextTopic.Text, MensajeBox.Text);
             MessageBox.Show("Mensaje publicado");
-
-            // Guardar el mensaje en el historial
-            string mensaje = $"[{TextTopic.Text}]: {MensajeBox.Text}";
             MensajeBox.Clear();
 
         }
@@ -255,7 +251,7 @@ namespace MQClientGUI
             if (TextTopic.Text != "")
             {
                 client.Receive(TextTopic.Text);
-                HistorialBox.Text = client.response;
+                HistorialBox.Text += $"{TextTopic.Text}:  {client.response} " + "\n";
             }
             else
             {
@@ -269,22 +265,18 @@ namespace MQClientGUI
         {
             if (TextTopic.Text != "")
             {
-                if (Topics.Contiene(TextTopic.Text))
-                {
-                    client.Unsubscribe(TextTopic.Text);
-                    MessageBox.Show("Desuscripcion exitosa");
-                    Topics.Eliminar(TextTopic.Text);
-                    TemasSubs.Text = "";
-                    Topics.RecorrerEscribe(TemasSubs);
-                }
-                else
-                {
-                    MessageBox.Show($"No esta suscrito al tema {TextTopic}");
-                }
+                
+                client.Unsubscribe(TextTopic.Text);
+                MessageBox.Show("Desuscripcion exitosa");
+                Topics.Eliminar(TextTopic.Text);
+                TemasSubs.Text = "";
+                
+            
+               
             }
             else
             {
-                MessageBox.Show("Ingrese un topic");
+                MessageBox.Show("Ingrese un tema");
             }
         }
     }

@@ -30,9 +30,6 @@
         {
             BrokerIPBox = new TextBox();
             Frame1 = new GroupBox();
-            button1 = new Button();
-            label1 = new Label();
-            TemasSubs = new RichTextBox();
             PublishB = new Button();
             button3 = new Button();
             label4 = new Label();
@@ -44,6 +41,9 @@
             button2 = new Button();
             Subs = new Button();
             TextTopic = new TextBox();
+            button1 = new Button();
+            label1 = new Label();
+            TemasSubs = new RichTextBox();
             GeneraIP = new Button();
             label3 = new Label();
             AppID = new TextBox();
@@ -57,10 +57,11 @@
             // 
             // BrokerIPBox
             // 
-            BrokerIPBox.Location = new Point(130, 25);
+            BrokerIPBox.Location = new Point(130, 21);
             BrokerIPBox.Name = "BrokerIPBox";
             BrokerIPBox.Size = new Size(377, 23);
             BrokerIPBox.TabIndex = 1;
+            BrokerIPBox.Text = "9090";
             BrokerIPBox.TextChanged += textBox2_TextChanged;
             // 
             // Frame1
@@ -80,40 +81,6 @@
             Frame1.TabStop = false;
             Frame1.Text = "Siatema";
             Frame1.Enter += groupBox1_Enter;
-            // 
-            // button1
-            // 
-            button1.BackColor = Color.FromArgb(255, 255, 128);
-            button1.Location = new Point(252, 214);
-            button1.Name = "button1";
-            button1.Size = new Size(136, 31);
-            button1.TabIndex = 16;
-            button1.Text = "Actualizar";
-            button1.UseVisualStyleBackColor = false;
-            button1.Click += button1_Click_1;
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.BorderStyle = BorderStyle.Fixed3D;
-            label1.ForeColor = SystemColors.ControlText;
-            label1.ImageAlign = ContentAlignment.TopRight;
-            label1.Location = new Point(70, 14);
-            label1.Name = "label1";
-            label1.RightToLeft = RightToLeft.Yes;
-            label1.Size = new Size(92, 17);
-            label1.TabIndex = 15;
-            label1.Text = "Temas Suscritos";
-            label1.TextAlign = ContentAlignment.MiddleCenter;
-            // 
-            // TemasSubs
-            // 
-            TemasSubs.Location = new Point(61, 36);
-            TemasSubs.Name = "TemasSubs";
-            TemasSubs.Size = new Size(168, 416);
-            TemasSubs.TabIndex = 14;
-            TemasSubs.Text = "";
-            TemasSubs.TextChanged += TemasSubs_TextChanged;
             // 
             // PublishB
             // 
@@ -153,7 +120,7 @@
             groupBox2.Controls.Add(HistorialBox);
             groupBox2.Location = new Point(542, 52);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(372, 352);
+            groupBox2.Size = new Size(819, 352);
             groupBox2.TabIndex = 9;
             groupBox2.TabStop = false;
             // 
@@ -163,7 +130,7 @@
             label6.BorderStyle = BorderStyle.Fixed3D;
             label6.ForeColor = SystemColors.ControlText;
             label6.ImageAlign = ContentAlignment.TopRight;
-            label6.Location = new Point(213, 32);
+            label6.Location = new Point(213, 30);
             label6.Name = "label6";
             label6.RightToLeft = RightToLeft.Yes;
             label6.Size = new Size(65, 17);
@@ -177,7 +144,7 @@
             label5.BorderStyle = BorderStyle.Fixed3D;
             label5.ForeColor = SystemColors.ControlText;
             label5.ImageAlign = ContentAlignment.TopRight;
-            label5.Location = new Point(65, 33);
+            label5.Location = new Point(65, 31);
             label5.Name = "label5";
             label5.RightToLeft = RightToLeft.Yes;
             label5.Size = new Size(37, 17);
@@ -190,7 +157,7 @@
             // 
             HistorialBox.Location = new Point(46, 52);
             HistorialBox.Name = "HistorialBox";
-            HistorialBox.Size = new Size(320, 269);
+            HistorialBox.Size = new Size(729, 269);
             HistorialBox.TabIndex = 1;
             HistorialBox.Text = "";
             HistorialBox.TextChanged += richTextBox3_TextChanged;
@@ -234,6 +201,40 @@
             TextTopic.TabIndex = 4;
             TextTopic.TextChanged += textBox1_TextChanged;
             // 
+            // button1
+            // 
+            button1.BackColor = Color.FromArgb(255, 255, 128);
+            button1.Location = new Point(252, 214);
+            button1.Name = "button1";
+            button1.Size = new Size(136, 31);
+            button1.TabIndex = 16;
+            button1.Text = "Actualizar";
+            button1.UseVisualStyleBackColor = false;
+            button1.Click += button1_Click_1;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.BorderStyle = BorderStyle.Fixed3D;
+            label1.ForeColor = SystemColors.ControlText;
+            label1.ImageAlign = ContentAlignment.TopRight;
+            label1.Location = new Point(70, 14);
+            label1.Name = "label1";
+            label1.RightToLeft = RightToLeft.Yes;
+            label1.Size = new Size(92, 17);
+            label1.TabIndex = 15;
+            label1.Text = "Temas Suscritos";
+            label1.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // TemasSubs
+            // 
+            TemasSubs.Location = new Point(61, 36);
+            TemasSubs.Name = "TemasSubs";
+            TemasSubs.Size = new Size(168, 416);
+            TemasSubs.TabIndex = 14;
+            TemasSubs.Text = "";
+            TemasSubs.TextChanged += TemasSubs_TextChanged;
+            // 
             // GeneraIP
             // 
             GeneraIP.Location = new Point(987, 21);
@@ -259,6 +260,7 @@
             AppID.Name = "AppID";
             AppID.Size = new Size(377, 23);
             AppID.TabIndex = 3;
+            AppID.Text = "127.0.0.1";
             AppID.TextChanged += textBox4_TextChanged;
             // 
             // label2

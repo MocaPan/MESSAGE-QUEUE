@@ -30,7 +30,7 @@ namespace NSMQClient
             catch (Exception ex)
             {
                 // En caso de error, mostrar el mensaje con el error
-                MessageBox.Show($"[Error] No se pudo conectar al servidor: {ex.Message}");
+                MessageBox.Show($"[Error] No se pudo conectar al servidor");
             }
         }
 
@@ -76,7 +76,7 @@ namespace NSMQClient
             // Convertir el comando a un arreglo de bytes en formato UTF8
             byte[] data = Encoding.UTF8.GetBytes(command);
             stream.Write(data, 0, data.Length); // Enviar los datos al servidor
-            MessageBox.Show($"[Info] Comando enviado: {command}"); // Mostrar el comando enviado
+            
 
             // Leer la respuesta del servidor
             byte[] buffer = new byte[2048];
@@ -90,7 +90,7 @@ namespace NSMQClient
         catch (Exception ex)
         {
             // Mostrar el error si algo falla al enviar o recibir el comando
-            MessageBox.Show($"[Error] No se pudo recibir la respuesta: {ex.Message}");
+            MessageBox.Show($"[Error] No se pudo recibir la respuesta");
             return string.Empty; // Retornar cadena vacía en caso de error
         }
     }
@@ -111,13 +111,13 @@ namespace NSMQClient
                 // Convertir el comando a un arreglo de bytes en formato UTF8
                 byte[] data = Encoding.UTF8.GetBytes(command);
                 stream.Write(data, 0, data.Length); // Enviar los datos al servidor
-                MessageBox.Show($"[Info] Comando enviado: {command}"); // Mostrar el comando enviado
+                
                 return true; // Retornar true si el comando fue enviado exitosamente
             }
             catch (Exception ex)
             {
                 // Mostrar el error si algo falla al enviar el comando
-                MessageBox.Show($"[Error] No se pudo enviar el comando: {ex.Message}");
+                MessageBox.Show($"[Error] No se pudo enviar el comando");
                 return false; // Retornar false en caso de error
             }
         }
@@ -139,7 +139,7 @@ namespace NSMQClient
             catch (Exception ex)
             {
                 // Mostrar el error si no se pudo cerrar la conexión
-                MessageBox.Show($"[Error] No se pudo cerrar la conexión: {ex.Message}");
+                MessageBox.Show($"[Error] No se pudo cerrar la conexión ");
             }
         }
     }
