@@ -49,8 +49,10 @@
             AppID = new TextBox();
             label2 = new Label();
             ConectarB = new Button();
+            groupBox1 = new GroupBox();
             Frame1.SuspendLayout();
             groupBox2.SuspendLayout();
+            groupBox1.SuspendLayout();
             SuspendLayout();
             // 
             // BrokerIPBox
@@ -63,9 +65,6 @@
             // 
             // Frame1
             // 
-            Frame1.Controls.Add(button1);
-            Frame1.Controls.Add(label1);
-            Frame1.Controls.Add(TemasSubs);
             Frame1.Controls.Add(PublishB);
             Frame1.Controls.Add(button3);
             Frame1.Controls.Add(label4);
@@ -85,7 +84,7 @@
             // button1
             // 
             button1.BackColor = Color.FromArgb(255, 255, 128);
-            button1.Location = new Point(1202, 233);
+            button1.Location = new Point(252, 214);
             button1.Name = "button1";
             button1.Size = new Size(136, 31);
             button1.TabIndex = 16;
@@ -99,7 +98,7 @@
             label1.BorderStyle = BorderStyle.Fixed3D;
             label1.ForeColor = SystemColors.ControlText;
             label1.ImageAlign = ContentAlignment.TopRight;
-            label1.Location = new Point(1020, 33);
+            label1.Location = new Point(70, 14);
             label1.Name = "label1";
             label1.RightToLeft = RightToLeft.Yes;
             label1.Size = new Size(92, 17);
@@ -109,7 +108,7 @@
             // 
             // TemasSubs
             // 
-            TemasSubs.Location = new Point(1011, 55);
+            TemasSubs.Location = new Point(61, 36);
             TemasSubs.Name = "TemasSubs";
             TemasSubs.Size = new Size(168, 416);
             TemasSubs.TabIndex = 14;
@@ -281,11 +280,24 @@
             ConectarB.UseVisualStyleBackColor = true;
             ConectarB.Click += button5_Click;
             // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(button1);
+            groupBox1.Controls.Add(label1);
+            groupBox1.Controls.Add(TemasSubs);
+            groupBox1.Location = new Point(1388, 11);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(42, 32);
+            groupBox1.TabIndex = 17;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "groupBox1";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1454, 594);
+            Controls.Add(groupBox1);
             Controls.Add(GeneraIP);
             Controls.Add(ConectarB);
             Controls.Add(Frame1);
@@ -299,6 +311,8 @@
             Frame1.PerformLayout();
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -326,5 +340,6 @@
         private Button button1;
         private Label label1;
         private RichTextBox TemasSubs;
+        private GroupBox groupBox1;
     }
 }

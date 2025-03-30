@@ -10,10 +10,12 @@ namespace NSMQClient
         private TcpClient client; // Instancia del cliente TCP
         private NetworkStream? stream; // Flujo de datos de la conexión. Nullable para evitar errores si la conexión falla.
         private Guid appId; // Identificador único de la aplicación
+        public string response; // Variable para almacenar la respuesta del servidor
 
         // Constructor que recibe la IP del servidor, el puerto y el ID de la aplicación
         public MQClient(string serverIp, int port, Guid appId, GroupBox Frame, Button ConectarB)
         {
+            this.response = string.Empty; // Inicializar la respuesta como cadena vacía
             this.appId = appId; // Asignar el appId recibido
             client = new TcpClient(); // Crear una nueva instancia de TcpClient
             try
@@ -51,10 +53,48 @@ namespace NSMQClient
         }
 
         // Método para recibir un mensaje de un tema
-        public bool Receive(string topic)
+     
+        public string Receive(string topic)
+    {
+        // Enviar el comando al servidor con el appId y el topic
+         string mensaje  = SendCommandAndReceiveResponse($"RECEIVE {appId} {topic}");
+         return mensaje; // Retornar el mensaje recibido
+    }
+
+    // Método privado para enviar un comando y recibir la respuesta como un string
+    private string SendCommandAndReceiveResponse(string command)
+    {
+        try
         {
-            return SendCommand($"RECEIVE {appId} {topic}"); // Enviar comando para recibir
+            // Verificar que el cliente esté conectado y que el flujo de datos no sea nulo
+            if (!client.Connected || stream == null)
+            {
+                MessageBox.Show("[Advertencia] El cliente no está conectado al servidor o la conexión es nula.");
+                return string.Empty; // Retornar cadena vacía si no está conectado
+            }
+
+            // Convertir el comando a un arreglo de bytes en formato UTF8
+            byte[] data = Encoding.UTF8.GetBytes(command);
+            stream.Write(data, 0, data.Length); // Enviar los datos al servidor
+            MessageBox.Show($"[Info] Comando enviado: {command}"); // Mostrar el comando enviado
+
+            // Leer la respuesta del servidor
+            byte[] buffer = new byte[2048];
+            int bytesRead = stream.Read(buffer, 0, buffer.Length); // Leer datos del servidor
+            string response = Encoding.UTF8.GetString(buffer, 0, bytesRead).Trim();
+            this.response = response; // Almacenar la respuesta en la variable de clase
+
+            // Retornar la respuesta recibida
+            return response;
         }
+        catch (Exception ex)
+        {
+            // Mostrar el error si algo falla al enviar o recibir el comando
+            MessageBox.Show($"[Error] No se pudo recibir la respuesta: {ex.Message}");
+            return string.Empty; // Retornar cadena vacía en caso de error
+        }
+    }
+
 
         // Método privado para enviar un comando al servidor
         private bool SendCommand(string command)

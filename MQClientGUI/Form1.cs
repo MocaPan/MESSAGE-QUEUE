@@ -29,6 +29,7 @@ namespace MQClientGUI
             HistorialBox.ReadOnly = false;
             TemasSubs.ReadOnly = false;
             GeneraIP.Visible = false;
+            groupBox1.Visible = false;
             this.Topics = new ListaSimple<string>();
             this.Mensajes = new ListaSimple<string>();
             this.Historial = new ListaSimple<string>();
@@ -119,7 +120,7 @@ namespace MQClientGUI
 
         private void richTextBox3_TextChanged(object sender, EventArgs e)
         {
-            Historial.RecorrerEscribe(HistorialBox);
+           
         }
 
         private void TemasSubs_TextChanged(object sender, EventArgs e)
@@ -245,15 +246,22 @@ namespace MQClientGUI
 
             // Guardar el mensaje en el historial
             string mensaje = $"[{TextTopic.Text}]: {MensajeBox.Text}";
-            Historial.Agregar(mensaje);
-            HistorialBox.Text += mensaje + "\n";
             MensajeBox.Clear();
-            TextTopic.Clear();
+
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            Historial.RecorrerEscribe(HistorialBox);
+            if (TextTopic.Text != "")
+            {
+                client.Receive(TextTopic.Text);
+                HistorialBox.Text = client.response;
+            }
+            else
+            {
+                MessageBox.Show("Ingrese un tema");
+            }
+
         }
 
 
